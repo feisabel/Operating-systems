@@ -66,7 +66,20 @@ Node* build_tree(long tgid) {
   }
   fclose(statusf);
 
-	return tree;    
+  string listReturn = "pgrep " + to_string(tgid);
+  char * command = new char [listReturn.length()+1];
+  strcpy (command, listReturn.c_str());
+  listReturn = run(command);
+  istringstream f(listReturn);
+  string l = "";    
+  while (getline(f, l)) {
+    int i = stoi(l);
+    tree->children.push_back(build_tree(i));
+      printf("Adicionei filho %li do pid %i\n",i , tgid );
+  }
+  printf("Adicionei os filho do pid %li\n", tgid );
+
+  return tree;   
 }
 
 
