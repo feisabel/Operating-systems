@@ -16,6 +16,31 @@ struct Node {
 	vector<Node*> children;
 };
 
+string run(const char* command){
+  int bufferSize = 128;
+  char buff[bufferSize];
+  string output = "";
+  //cout << "command: " << command << endl;
+  FILE *procStream = popen(command, "r");
+
+  if(procStream == NULL){
+    throw std::runtime_error("Could not get process output");
+  }else{
+    try{
+      while (!feof(procStream)) {
+          if (fgets(buff, bufferSize, procStream) != NULL)
+              output += buff;
+      }
+    }catch(...){
+      pclose(procStream);
+      throw std::runtime_error("Error while getting output of process");
+    }
+    pclose(procStream);
+    return output;
+  }
+}
+
+
 Node* build_tree(long tgid) {
 	Node* tree = new Node();
   char path[40], line[100], *p;
