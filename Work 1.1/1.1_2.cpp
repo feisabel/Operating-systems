@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>  // istringstream
+#include <unistd.h>
 
 using namespace std;
 
@@ -40,6 +41,11 @@ string run(const char* command){
   }
 }
 
+char * stc(string a){
+  char * b = new char [a.length()+1];
+  strcpy (b, a.c_str());
+  return b;
+}
 
 Node* build_tree(long tgid) {
 	Node* tree = new Node();
@@ -82,9 +88,18 @@ Node* build_tree(long tgid) {
   return tree;   
 }
 
-
 int main(void){
   int pid = 6;
+  unsigned int microseconds = 10000000; //10 segundos
   Node* tree = build_tree(pid);
+
+  char * c_nbProc = stc("ps -A --no-headers | wc -l");
+  char * c_nbProcUser = stc("ps hax -o user | sort | uniq -c");
+
+  while(true){
+    cout << "Number of process in the OS: \n" << run(c_nbProc) ;
+    cout << "Number of process by user:\n" <<run(c_nbProcUser) ;
+    usleep(microseconds); 
+  }
   return 0;
 }
