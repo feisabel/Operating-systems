@@ -57,6 +57,11 @@ Node* build_tree(long tgid) {
   statusf = fopen(path, "r");
   printf("Open file do PID: %li\n", tgid);
 
+  if(!statusf){
+    fprintf(stderr, "Problem trying to open\n");
+    exit(-1); 
+  }
+
   tree->pid = tgid;
   printf("Add PID: %li\n", tgid);
   while(fgets(line, 100, statusf)) {
