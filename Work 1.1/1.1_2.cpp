@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sstream>  // istringstream
 #include <unistd.h>
+#include <fstream>
+#include "json.h"
 
 using namespace std;
 
@@ -18,11 +20,26 @@ struct Node {
 	vector<Node*> children;
 };
 
+Json::Value DFS(Node* u) {
+  Json::Value nod;
+  Json::Value children;
+  nod["Name"] = Json::Value(u->name);
+  nod["PID"] = Json::Value((unsigned int)u->pid);
+  nod["PPID"] = Json::Value((unsigned int)u->ppid);
+  nod["UID"] = Json::Value((unsigned int)u->user_uid);
+  nod["UID Name"] = Json::Value(u->user_name);
+  for(int i = 0; i < u->children.size(); i++) {
+    Node* v = u->children[i];
+      children.append(DFS(v));
+  }
+  nod["Children"] = children;
+  return nod;
+}
+
 string run(const char* command){
   int bufferSize = 128;
   char buff[bufferSize];
   string output = "";
-  //cout << "command: " << command << endl;
   FILE *procStream = popen(command, "r");
 
   if(procStream == NULL){
@@ -59,8 +76,7 @@ Node* build_tree(long tgid, Node * father) {
   //printf("Open file do PID: %li\n", tgid);
 
   if(!statusf){
-    fprintf(stderr, "Problem trying to open\n");
-   // exit(-1); 
+    //fprintf(stderr, "Problem trying to open\n");
   }
   else{
     tree->pid = tgid;
@@ -81,7 +97,7 @@ Node* build_tree(long tgid, Node * father) {
         }
         //break;
     }
-    cout << "Add process: " << tgid << "(" << tree->name << ")" << "\nPPid: " << tree->ppid << "\nUid: " << tree->user_uid << "(" << tree->user_name << ")\n\n\n";
+   // cout << "Add process: " << tgid << "(" << tree->name << ")" << "\nPPid: " << tree->ppid << "\nUid: " << tree->user_uid << "(" << tree->user_name << ")\n\n\n";
     fclose(statusf);
 
     char * command = stc("pgrep -P" + to_string(tgid));
@@ -97,17 +113,26 @@ Node* build_tree(long tgid, Node * father) {
 }
 
 int main(void){
+  static string file_name = "1.1_2.json";
   int pid;;
   cin >> pid;
   unsigned int microseconds = 10000000; //10 segundos
   Node* tree = build_tree(pid, NULL);
 
+  Json::Value t = DFS(tree);
+
+  Json::StyledWriter writer;
+  ofstream outp(file_name);
+  outp << writer.write(t);
+  outp.close();
+
+  cout << "====================Tree of process " << pid << " in the file: " << file_name << "===================" <<endl;
   char * c_nbProc = stc("ps -A --no-headers | wc -l");
   char * c_nbProcUser = stc("ps hax -o user | sort | uniq -c");
 
   while(true){
-    cout << "Number of process in the OS: \n" << run(c_nbProc) ;
-    cout << "Number of process by user:\n" <<run(c_nbProcUser) ;
+    cout << "====================Number of process in the OS: ====================\n" << run(c_nbProc) ;
+    cout << "====================Number of process by user:=======================\n" <<run(c_nbProcUser) ;
     usleep(microseconds); 
   }
   return 0;
