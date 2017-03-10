@@ -1,5 +1,8 @@
 
 # Created by https://www.gitignore.io/api/c,c++,sublimetext,vim
+### Outputs ###
+# Created by 1.1_1.cpp
+*.json
 
 ### C ###
 # Prerequisites
