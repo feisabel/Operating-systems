@@ -1,3 +1,13 @@
+/*
+This program is about preventing a fork bomb. 
+We set a limit for the number of processes of a user and then run a fork bomb.
+The fork call will create new processes as long as the total number of processes of a user hasn't reached the established limit.
+After that, the fork call will not be able to create new processes, return -1. The error message is outed by the program.
+In order to see how many processes were created by the program, type "ps -u | grep executable_name | wc -l" at the terminal while the program is running.
+This program never ends; although the fork bomb is prevented, the while(true) loop still runs forever. In order to stop execution, use ctrl+C.
+*/
+
+
 #include <unistd.h>
 #include <cstdio>
 #include <stdexcept>
@@ -13,30 +23,6 @@
 #include <sstream>
 
 using namespace std;
-
-string run(const char* command){
-  int bufferSize = 128;
-  char buff[bufferSize];
-  string output = "";
-  //cout << "command: " << command << endl;
-  FILE *procStream = popen(command, "r");
-
-  if(procStream == NULL){
-    throw std::runtime_error("Could not get process output");
-  }else{
-    try{
-      while (!feof(procStream)) {
-          if (fgets(buff, bufferSize, procStream) != NULL)
-              output += buff;
-      }
-    }catch(...){
-      pclose(procStream);
-      throw std::runtime_error("Error while getting output of process");
-    }
-    pclose(procStream);
-    return output;
-  }
-}
 
 int main(int argc, char *argv[]) {
 	//setting a limit for the number of processes of the user
