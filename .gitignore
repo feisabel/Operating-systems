@@ -1,3 +1,10 @@
+# Ignore ignore all files without extension
+*
+!*.*
+!*/
+
+#Ignore .DS_Store
+*.DS_Store
 
 # Created by https://www.gitignore.io/api/c,c++,sublimetext,vim
 ### Outputs ###
