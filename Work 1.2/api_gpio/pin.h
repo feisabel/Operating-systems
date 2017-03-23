@@ -14,6 +14,7 @@ class Pin {
 		std::string name_pin;
 		Direction d;
 		Value v;
+		bool checkDirection();
 	
 	public:
 

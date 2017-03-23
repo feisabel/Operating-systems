@@ -48,6 +48,8 @@ void Pin::setDirection(Direction d){
 	switch(d){
 		case Direction::IN:
 			fs << "in";
+			cout << "Value set to 0 due to change of direction" << endl;
+			setOff();
 			break;
 		case Direction::OUT:
 			fs << "out";
@@ -56,14 +58,31 @@ void Pin::setDirection(Direction d){
 	fs.close();
 }
 
+/*
+* Check if can set value to 1
+* @return true if direction is Out
+* @return false if direction is In
+*/
+bool Pin::checkDirection(){
+	switch(d){
+		case Direction::IN:
+			return false;
+		case Direction::OUT:
+			return true;
+	} 
+}
 
 void Pin::setOn(){
-	fstream fs;
+	if (checkDirection()){
+		fstream fs;
 
-	fs.open("/sys/class/gpio/"+ pinMap[name_pin] + "/value");
-	fs << "1";
-	fs.close();
-	v = Value::HIGH;
+		fs.open("/sys/class/gpio/"+ pinMap[name_pin] + "/value");
+		fs << "1";
+		fs.close();
+		v = Value::HIGH;
+	} else {
+		cout << "Can not value 1 while direction IN" << endl;
+	}	
 }
 
 void Pin::setOff(){
@@ -81,7 +100,7 @@ void Pin::changeValue(){
 			setOff();
 			break;
 		case Value::LOW:
-			setOn();
+			if (checkDirection()) setOn();
 			break;
 	}
 }
@@ -91,8 +110,12 @@ void Pin::setValue(Value value){
 	fs.open("/sys/class/gpio/"+ pinMap[name_pin] + "/value");
 	switch(value){
 		case Value::HIGH:
-			fs << "1";
-			v = value;
+			if(checkDirection()){
+				fs << "1";
+				v = value;
+			} else {
+				cout << "Can not value 1 while direction IN" << endl;
+			}
 			break;
 		case Value::LOW:
 			fs << "0";
