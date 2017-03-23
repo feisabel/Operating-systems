@@ -19,6 +19,8 @@ class Pin {
 
 	Pin(std::string name, Direction direction, Value value);
 
+	~Pin();
+
 	void setDirection(Direction d);
 
 	void setOn();

@@ -32,6 +32,15 @@ Pin::Pin(std::string name, Direction direction, Value value){
 	}
 }
 
+Pin::~Pin(){
+	fstream fs;
+	fs.open("/sys/class/gpio/unexport");
+	string number = pinMap[name_pin].substr(4, pinMap[name_pin].size());
+	fs << number;
+	//TODO: check if "bash: echo: write error: Invalid argument"
+	fs.close();
+}
+
 void Pin::setDirection(Direction d){
 	fstream fs;
 
