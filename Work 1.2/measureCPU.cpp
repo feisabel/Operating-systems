@@ -100,7 +100,7 @@ int main() {
 
 	while(1){
 		first = getCPUValues();
-		usleep(1000000);
+		usleep(500000);
 		second = getCPUValues();
 
 		usage = calculatePercentage(first, second);
@@ -118,18 +118,21 @@ int main() {
 			yellow.setOff();
 			red.setOn();
 		} else {
-			green.changeValue();
-			yellow.changeValue();
-			red.changeValue();
-			usleep(500000);
-			green.changeValue();
-			yellow.changeValue();
-			red.changeValue();
-			usleep(500000);
-			green.changeValue();
-			yellow.changeValue();
-			red.changeValue();
-			usleep(500000);
+			for(int i = 0; i < 5; i++) {
+				green.setOn();
+				yellow.setOff();
+				red.setOff();
+				usleep(100000);
+				green.setOff();
+				yellow.setOn();
+				red.setOff();
+				usleep(100000);
+				green.setOff();
+				yellow.setOff();
+				red.setOn();
+				usleep(100000);
+			}
+			red.setOff();
 		}
 		if (btn.getValue() == 1){
 			killTopProcess();
