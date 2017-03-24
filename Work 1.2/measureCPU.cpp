@@ -13,41 +13,13 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include "../Utils/utils.h"
 #include "api_gpio/pin.h"
 #include "api_gpio/pmap.h"
 #include <string.h>
 //#include <stdexcept>
 
 using namespace std;
-
-string run(const char* command){
-  int bufferSize = 128;
-  char buff[bufferSize];
-  string output = "";
-  FILE *procStream = popen(command, "r");
-
-  if(procStream == NULL){
-    throw std::runtime_error("Could not get process output");
-  }else{
-    try{
-      while (!feof(procStream)) {
-          if (fgets(buff, bufferSize, procStream) != NULL)
-              output += buff;
-      }
-    }catch(...){
-      pclose(procStream);
-      throw std::runtime_error("Error while getting output of process");
-    }
-    pclose(procStream);
-    return output;
-  }
-}
-
-char * stc(string a){
-  char * b = new char [a.length()+1];
-  strcpy (b, a.c_str());
-  return b;
-}
 
 void killTopProcess() {
 	string s = run(stc("ps aux | sort -nrk 3,3 | head -n 1"));

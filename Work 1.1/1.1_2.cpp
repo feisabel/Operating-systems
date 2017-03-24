@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fstream>
 #include "json.h"
+#include "../Utils/utils.h"
 
 using namespace std;
 
@@ -34,35 +35,6 @@ Json::Value DFS(Node* u) {
   }
   nod["Children"] = children;
   return nod;
-}
-
-string run(const char* command){
-  int bufferSize = 128;
-  char buff[bufferSize];
-  string output = "";
-  FILE *procStream = popen(command, "r");
-
-  if(procStream == NULL){
-    throw std::runtime_error("Could not get process output");
-  }else{
-    try{
-      while (!feof(procStream)) {
-          if (fgets(buff, bufferSize, procStream) != NULL)
-              output += buff;
-      }
-    }catch(...){
-      pclose(procStream);
-      throw std::runtime_error("Error while getting output of process");
-    }
-    pclose(procStream);
-    return output;
-  }
-}
-
-char * stc(string a){
-  char * b = new char [a.length()+1];
-  strcpy (b, a.c_str());
-  return b;
 }
 
 Node* build_tree(long tgid, Node * father) {
