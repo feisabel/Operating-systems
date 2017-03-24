@@ -7,6 +7,10 @@ This project simulates a traffic light for CPU usage. If the CPU usage x is:
 - 75% < x : all leds blink frenetically
 
 The user can click a panic button to kill the process using most CPU.
+
+Bibliography:
+http://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process
+https://superuser.com/questions/668306/control-linux-cpu-load-for-testing
 */
 
 #include <unistd.h>
