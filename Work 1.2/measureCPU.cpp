@@ -56,6 +56,7 @@ void killTopProcess() {
 	int pid; 
 	string dummy;
 	ss >> dummy >> pid;
+	cout << "Kill the " << pid << endl;
 
 	kill(pid, SIGKILL);
 }
@@ -95,33 +96,28 @@ int main() {
 	Pin red ("P9_14", Direction::OUT, Value::LOW);
 	Pin yellow ("P9_16", Direction::OUT, Value::LOW);
 	Pin green ("P9_22", Direction::OUT, Value::LOW);
+	Pin btn ("P9_30", Direction::IN, Value::LOW);
 
-	for(int i = 0; i < 10; i++) {
+	while(1){
 		first = getCPUValues();
 		usleep(1000000);
 		second = getCPUValues();
 
 		usage = calculatePercentage(first, second);
+		cout << "Usage: " << usage << endl;
 		if(usage <= 25.0) {
 			green.setOn();
 			yellow.setOff();
 			red.setOff();
-		}
-		else if (usage <= 50.0) {
+		} else if (usage <= 50.0) {
 			green.setOff();
 			yellow.setOn();
 			red.setOff();
-		}
-		else if (usage <= 75.0) {
+		} else if (usage <= 75.0) {
 			green.setOff();
 			yellow.setOff();
 			red.setOn();
-		}
-		else {
-			green.changeValue();
-			yellow.changeValue();
-			red.changeValue();
-			usleep(500000);
+		} else {
 			green.changeValue();
 			yellow.changeValue();
 			red.changeValue();
@@ -135,10 +131,10 @@ int main() {
 			red.changeValue();
 			usleep(500000);
 		}
-
+		if (btn.getValue() == 1){
+			killTopProcess();
+			cout << "Process killed" << endl;
+			usleep(1000000);
+		}
 	}
-	green.setOff();
-	yellow.setOff();
-	red.setOff();
-	killTopProcess();
 }
