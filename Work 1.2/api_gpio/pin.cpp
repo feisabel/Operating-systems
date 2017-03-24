@@ -13,7 +13,7 @@ using namespace std;
 */
 Pin::Pin(std::string name, Direction direction, Value value){
 	if (pinMap.find(name) == pinMap.end()){
-		cout << "Not a pin avalaible" << endl;
+		cout << "Not a pin available" << endl;
 		EXIT_FAILURE;
 	}else{
 		name_pin = name;
@@ -48,8 +48,8 @@ void Pin::setDirection(Direction d){
 	switch(d){
 		case Direction::IN:
 			fs << "in";
-			cout << "Value set to 0 due to change of direction" << endl;
-			setOff();
+			//cout << "Value set to 0 due to change of direction" << endl;
+			//setOff();
 			break;
 		case Direction::OUT:
 			fs << "out";
@@ -123,4 +123,13 @@ void Pin::setValue(Value value){
 			break;
 	}
 	fs.close();
+}
+
+int Pin::getValue(){
+	ifstream fs;
+
+	fs.open("/sys/class/gpio/"+ pinMap[name_pin] + "/value");
+	string value;
+	getline(fs, value);
+	return stoi(value);
 }

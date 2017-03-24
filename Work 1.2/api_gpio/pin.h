@@ -32,6 +32,8 @@ class Pin {
 
 	void setValue(Value value);
 
+	int getValue();
+
 };
 
 #endif
