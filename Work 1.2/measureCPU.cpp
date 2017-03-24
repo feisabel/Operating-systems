@@ -1,3 +1,14 @@
+/*
+This project simulates a traffic light for CPU usage. If the CPU usage x is:
+
+- x <= 25% : green LED lights up
+- 25% < x <= 50% : yellow LED lights up
+- 50% < x <= 75% : red LED lights up
+- 75% < x : all leds blink frenetically
+
+The user can click a panic button to kill the process using most CPU.
+*/
+
 #include <unistd.h>
 #include <cstdio>
 #include <stdexcept>
@@ -17,10 +28,11 @@
 #include "api_gpio/pin.h"
 #include "api_gpio/pmap.h"
 #include <string.h>
-//#include <stdexcept>
 
 using namespace std;
 
+
+//Finds the process using most CPU and kills it
 void killTopProcess() {
 	string s = run(stc("ps aux | sort -nrk 3,3 | head -n 1"));
 	stringstream ss(s);
@@ -33,6 +45,7 @@ void killTopProcess() {
 	kill(pid, SIGKILL);
 }
 
+//Looks at the proc/stat/ folder to find CPU values
 vector<long long> getCPUValues() {
 	FILE* file;
 	long long user, nice, sys, idle;
@@ -48,6 +61,7 @@ vector<long long> getCPUValues() {
 	return CPUValues;
 }
 
+//Given CPU values, finds the percentage for CPU usage
 double calculatePercentage(vector<long long> first, vector<long long> second) {
 	long long total;
 	double usage;
@@ -71,12 +85,14 @@ int main() {
 	Pin btn ("P9_30", Direction::IN, Value::LOW);
 
 	while(1){
+		//Calculates current CPU usage
 		first = getCPUValues();
 		usleep(500000);
 		second = getCPUValues();
-
 		usage = calculatePercentage(first, second);
 		cout << "Usage: " << usage << endl;
+
+		//Lights up LEDs
 		if(usage <= 25.0) {
 			green.setOn();
 			yellow.setOff();
@@ -106,6 +122,8 @@ int main() {
 			}
 			red.setOff();
 		}
+
+		//Checks if panic button is being clicked
 		if (btn.getValue() == 1){
 			killTopProcess();
 			cout << "Process killed" << endl;
