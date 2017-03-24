@@ -15,8 +15,50 @@
 #include <vector>
 #include "api_gpio/pin.h"
 #include "api_gpio/pmap.h"
+#include <string.h>
+//#include <stdexcept>
 
 using namespace std;
+
+string run(const char* command){
+  int bufferSize = 128;
+  char buff[bufferSize];
+  string output = "";
+  FILE *procStream = popen(command, "r");
+
+  if(procStream == NULL){
+    throw std::runtime_error("Could not get process output");
+  }else{
+    try{
+      while (!feof(procStream)) {
+          if (fgets(buff, bufferSize, procStream) != NULL)
+              output += buff;
+      }
+    }catch(...){
+      pclose(procStream);
+      throw std::runtime_error("Error while getting output of process");
+    }
+    pclose(procStream);
+    return output;
+  }
+}
+
+char * stc(string a){
+  char * b = new char [a.length()+1];
+  strcpy (b, a.c_str());
+  return b;
+}
+
+void killTopProcess() {
+	string s = run(stc("ps aux | sort -nrk 3,3 | head -n 1"));
+	stringstream ss(s);
+
+	int pid; 
+	string dummy;
+	ss >> dummy >> pid;
+
+	kill(pid, SIGKILL);
+}
 
 vector<long long> getCPUValues() {
 	FILE* file;
@@ -45,6 +87,8 @@ double calculatePercentage(vector<long long> first, vector<long long> second) {
 }
 
 int main() {
+	init();
+
 	vector<long long> first, second;
 	double usage;
 
@@ -52,9 +96,9 @@ int main() {
 	Pin yellow ("P9_16", Direction::OUT, Value::LOW);
 	Pin green ("P9_22", Direction::OUT, Value::LOW);
 
-	for(int i = 0; i < 20; i++) {
+	for(int i = 0; i < 10; i++) {
 		first = getCPUValues();
-		usleep(5000000);
+		usleep(1000000);
 		second = getCPUValues();
 
 		usage = calculatePercentage(first, second);
@@ -78,7 +122,23 @@ int main() {
 			yellow.changeValue();
 			red.changeValue();
 			usleep(500000);
+			green.changeValue();
+			yellow.changeValue();
+			red.changeValue();
+			usleep(500000);
+			green.changeValue();
+			yellow.changeValue();
+			red.changeValue();
+			usleep(500000);
+			green.changeValue();
+			yellow.changeValue();
+			red.changeValue();
+			usleep(500000);
 		}
-	}
 
+	}
+	green.setOff();
+	yellow.setOff();
+	red.setOff();
+	killTopProcess();
 }
