@@ -6,4 +6,6 @@ std::string run(const char* command);
 
 char * stc(std::string a);
 
+int readAnalog(int number);
+
 #endif

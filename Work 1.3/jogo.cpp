@@ -19,9 +19,11 @@
 #include <unistd.h> //usleep
 #include "../Utils/api_gpio/pmap.h"
 #include "../Utils/api_gpio/pin.h"
+#include "../Utils/utils.h"
 
+#define PORT_LDR 4 //Light Dependent Resistor
+#define PORT_POT 1 //potentiometer
 
-#define PATH_ADC "/sys/bus/iio/devices/iio:device0/in_voltage"
 using namespace std;
 int n = 20, m = 20;
 bool jump = false;
@@ -59,12 +61,7 @@ void read_pot(){
 	int number = 1;
 	while(running) {
 		
-		stringstream ss;
-    	ss << PATH_ADC << number << "_raw";
-    	fstream fs;
-    	fs.open(ss.str().c_str(), fstream::in);
-    	fs >> number;
-    	fs.close();
+		number = readAnalog(PORT_POT);
     	//cout << n << " " << m << " " << number<< endl;
     	if(number > 2048) {
     		if (n > 0) {
@@ -105,7 +102,10 @@ void read_botao(){
 }
 
 void read_luz(){
-
+	int number = 1;
+	while (running){
+		number = readAnalog(PORT_LDR);
+	}
 
 }
 
