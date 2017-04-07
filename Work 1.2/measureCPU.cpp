@@ -29,8 +29,8 @@ https://superuser.com/questions/668306/control-linux-cpu-load-for-testing
 #include <fstream>
 #include <vector>
 #include "../Utils/utils.h"
-#include "api_gpio/pin.h"
-#include "api_gpio/pmap.h"
+#include "../Utils/api_gpio/pin.h"
+#include "../Utils/api_gpio/pmap.h"
 #include <string.h>
 
 using namespace std;
