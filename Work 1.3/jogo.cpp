@@ -16,6 +16,10 @@
 #include <string.h>
 #include <thread>
 #include <pthread.h>
+#include <unistd.h> //usleep
+#include "../Utils/api_gpio/pmap.h"
+#include "../Utils/api_gpio/pin.h"
+
 
 #define PATH_ADC "/sys/bus/iio/devices/iio:device0/in_voltage"
 using namespace std;
@@ -82,10 +86,26 @@ void read_pot(){
 }
 
 void read_botao(){
+	init();
+	Pin btn ("P9_27", Direction::IN, Value::LOW);
+	int btnValue;
+	while(running){
+		btnValue = btn.getValue();
+		if (btnValue == 1){
+			jump = true;
+			system("clear");
+			draw();
+			usleep(1500000);
+			jump = false;
+		}
+		system("clear");
+		draw();
+	}
 
 }
 
 void read_luz(){
+
 
 }
 
