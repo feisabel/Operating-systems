@@ -16,7 +16,15 @@ Run `apt-get install stress`
 
 Run `apt-get install cpulimit`
 
-On the BeagleBone Black, put the red LED on P9_14 (gpio50), the yellow LED on P9_16 (gpio51), the green LED on P9_22 (gpio2) and the button on P9_30 (gpio112).
+Set up the beagleboneBlack:
+ - P9_14 (gpio50) : red LED
+ - P9_16 (gpio51) : yellow LED
+ - P9_22 (gpio2) : green LED
+ - P9_30 (gpio112) : Pushbutton
+
+Your Photoboard should be something like this:
+
+![alt tag](Protoboard_bb.png?raw=true "Configuration")
 
 Run `make`
 
