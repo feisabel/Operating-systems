@@ -1,8 +1,6 @@
 # Work 1.3
 
-LDR for José put his hand on his waist.
-Pushbutton for José jump.
-Potentiometer for José to move.
+This project runs a game to be played with the BeagleBone Black as a joystick. The "game" is very simple and consists only of moving a stick figure, named José. The game could be improved so that José has to avoid shots, in order to have a real objective and allow winning/losing. Because the goal of the project was to implement threads and making a joystick with the BBB, we didn't worry too much about the game. We use the potenciometer for horizonal movements, the LDR for jumping and the button for a special feature (José puts his hand on his waist). Reading of the control information is done by threads (one for each), with the potenciometer thread having the highest priority and the button thread having the lowest priority.
 
 ### Set up environment
 --- 
@@ -34,7 +32,9 @@ Run as root:
 
 `./jose`
 
- 
+In order to quit the game, press 'q' then Enter.
+
+
 ## Contributors ##
 ---
 
