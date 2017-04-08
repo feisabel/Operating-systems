@@ -1,5 +1,9 @@
 # Work 1.3
 
+LDR for José put his hand on his waist.
+Pushbutton for José jump.
+Potentiometer for José to move.
+
 ### Set up environment
 --- 
 Run `sudo apt-get update`
@@ -19,7 +23,16 @@ Your Photoboard should be something like this:
 ![alt tag](Protoboard_bb.png?raw=true "Configuration")
 
 
+## Build & development 
+---
+
 Run `make`
+
+Run as root:
+
+`echo 115 > /sys/class/gpio/export`
+
+`./jose`
 
  
 ## Contributors ##

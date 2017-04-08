@@ -26,10 +26,11 @@ Your Photoboard should be something like this:
 
 ![alt tag](Protoboard_bb.png?raw=true "Configuration")
 
-Run `make`
 
 ## Build & development 
 ---
+
+Run `make`
 
 Run as root:
 
