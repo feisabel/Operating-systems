@@ -30,8 +30,10 @@ To check it out:
 Run `cd Work\ 1.2/`
 s
 
-## Work 1.3 (  )
+## Work 1.3 ( Threads and GPIO )
 ---
+
+This project runs a game to be played with the BeagleBone Black as a joystick. We use the potenciometer for horizonal movements, the LDR for jumping and the button for a special feature. Reading of the control information is done by threads (one for each).
 
 To check it out:
 
