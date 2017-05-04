@@ -1,6 +1,4 @@
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -11,33 +9,35 @@ public class Server extends Thread {
         conexao = s;
     }
 
+    public static String getString( InputStream is) throws IOException {
+        int ch;
+        StringBuilder sb = new StringBuilder();
+        while((ch = is.read()) != '\0')
+            sb.append((char)ch);
+        return sb.toString();
+    }
+
     public void run() {
-        ObjectOutputStream output;
-        ObjectInputStream input;
+        DataInputStream input;
         boolean sair = false;
-        String mensagem = "";
 
         try {
-            while (!sair) {
-                output = new ObjectOutputStream(conexao.getOutputStream());
-                input = new ObjectInputStream(conexao.getInputStream());
-
-                do {
+            while(!sair){
+                input = new DataInputStream(conexao.getInputStream());
+                String result = "";
+                do{
                     try {
-                        mensagem = (String) input.readObject();
-                        System.out.println("Cliente>> " + mensagem);
-                        output.writeObject(mensagem);
-                    } catch (IOException iOException) {
-                        System.err.println("erro: " + iOException.toString());
+                       result = getString(input);
+                       System.out.println("Cliente>> " + result);
+                   } catch (IOException iOException) {
+                        System.err.println("Erro lendo mensagem: " + iOException.toString());
                     }
-                } while (!mensagem.equals("DF"));
+                } while(!result.equals("DF"));
 
                 System.out.println("Conexao encerrada pelo cliente");
-                sair = true;
-                output.close(); input.close();
+                input.close();
                 conexao.close();
             }
-
         } catch (Exception e) {
             System.err.println("Erro: " + e.toString());
         }

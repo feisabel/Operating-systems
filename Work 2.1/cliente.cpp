@@ -21,7 +21,9 @@ using namespace std;
  
 class Mensagem {
     public:
-        int pot, bot, luz;
+         int pot= 1;
+        int bot=2;
+        int luz =3;
         Mensagem();
 };
 
@@ -36,8 +38,8 @@ void socketHandler(int socketId) {
     //Enviar uma msg para o cliente que se conectou
     int bytesenviados;
     msg = "" + to_string(mensagem.pot) + "," + to_string(mensagem.bot) + "," + to_string(mensagem.luz);
-    printf("Cliente vai enviar uma mensagem\n");
-    bytesenviados = ::send(socketId,&msg,sizeof(msg),0);
+    cout << "Cliente vai enviar uma mensagem : " <<  msg << endl;
+    bytesenviados = ::send(socketId,msg.data(),msg.size()+1,0);
     if (bytesenviados == -1) {
         printf("Falha ao executar send()");
         exit(EXIT_FAILURE);
@@ -84,9 +86,9 @@ int main(int argc, char *argv[])
     endereco.sin_family = AF_INET;
     endereco.sin_port = htons(PORTNUM);
     endereco.sin_addr.s_addr = inet_addr("127.0.0.1");
-    /*mensagem.bot = 1;
+    mensagem.bot = 1;
     mensagem.pot = 2;
-    mensagem.luz = 3;*/
+    mensagem.luz = 3;
     /*
      * Criando o Socket
      *
@@ -101,7 +103,7 @@ int main(int argc, char *argv[])
         printf("Falha ao executar socket()\n");
         exit(EXIT_FAILURE);
     }*/
-    std::thread pot(read_pot);
+    /*std::thread pot(read_pot);
     std::thread botao(read_botao);
     std::thread luz(read_luz);
     struct sched_param param1;
@@ -112,7 +114,7 @@ int main(int argc, char *argv[])
     param2.sched_priority = sched_get_priority_max(SCHED_RR)/2;
     pthread_setschedparam(pot.native_handle(), SCHED_RR, &param1);
     pthread_setschedparam(luz.native_handle(), SCHED_RR, &param2);
-    pthread_setschedparam(botao.native_handle(), SCHED_RR, &param3);
+    pthread_setschedparam(botao.native_handle(), SCHED_RR, &param3);*/
     /*if ( ::connect (socketId, (struct sockaddr *)&endereco, sizeof(struct sockaddr)) == -1 ) {
         printf("Falha ao executar connect()\n");
         exit(EXIT_FAILURE);
