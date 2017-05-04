@@ -4,24 +4,21 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class Server {
+public class Server extends Thread {
+    private Socket conexao;
 
-    public void run(int porta) {
+    public Server(Socket s){
+        conexao = s;
+    }
+
+    public void run() {
         ObjectOutputStream output;
         ObjectInputStream input;
         boolean sair = false;
         String mensagem = "";
 
         try {
-            ServerSocket servidor = new ServerSocket(porta);
-            Socket conexao;
             while (!sair) {
-                System.out.println("Esperando conexão " + porta);
-
-                conexao = servidor.accept();
-
-                System.out.println(conexao.getInetAddress().getHostAddress() + " conectado");
-
                 output = new ObjectOutputStream(conexao.getOutputStream());
                 input = new ObjectInputStream(conexao.getInputStream());
 
@@ -48,7 +45,17 @@ public class Server {
 
     public static void main(String[] args) {
         int porta = 4325;
-        Server s = new Server();
-        s.run(porta);
+        try{
+            ServerSocket s = new ServerSocket(porta);
+            while(true){
+                System.out.println("Esperando conexão " + porta);
+                Socket conexao = s.accept();
+                System.out.println(conexao.getInetAddress().getHostAddress() + " conectado");
+                Thread t = new Server(conexao);
+                t.start();
+            }
+        }catch (IOException e){
+            System.err.println("erro: " + e.toString());
+        }
     }
 }
