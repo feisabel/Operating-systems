@@ -10,10 +10,7 @@
 #include <vector>
 using namespace std;
  
- 
-#define MAXMSG 1024
-#define MAXNAME 100
-#define PORTNUM 8000
+#define PORTNUM 4325
  
 class Mensagem {
     public:
@@ -100,14 +97,13 @@ void socketHandler(int socketDescriptor,Mensagem mensagem)
  
     //receber uma msg do cliente
     //printf("Servidor vai ficar esperando uma mensagem\n");
-    byteslidos = recv(socketDescriptor,&mensagem,sizeof(mensagem),0);
+    byteslidos = ::recv(socketDescriptor,&mensagem,sizeof(mensagem),0);
  
     if (byteslidos == -1)
     {
         printf("Falha ao executar recv()");
         exit(EXIT_FAILURE);
     }
-
     if(mensagem.pot > atual + 10) {
         atual = mensagem.pot;
         if (n > 0) {
@@ -185,7 +181,7 @@ int main(int argc, char *argv[])
     }
  
     //Habilitando o servidor a receber conexoes do cliente
-    if ( listen( socketId, 10 ) == -1) {
+    if ( ::listen( socketId, 10 ) == -1) {
         printf("Falha ao executar listen()\n");
         exit(EXIT_FAILURE);
     }
@@ -193,7 +189,7 @@ int main(int argc, char *argv[])
     //servidor ficar em um loop infinito
     while(1) { 
         //Servidor fica bloqueado esperando uma conexão do cliente
-        conexaoClienteId = accept( socketId,(struct sockaddr *) &enderecoCliente,&tamanhoEnderecoCliente );
+        conexaoClienteId = ::accept( socketId,(struct sockaddr *) &enderecoCliente,&tamanhoEnderecoCliente );
  
         //disparar a thread
         thread t(socketHandler,conexaoClienteId,mensagem);

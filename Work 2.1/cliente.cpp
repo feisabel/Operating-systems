@@ -7,13 +7,14 @@
 #include <unistd.h>     //close
 #include <thread>
 #include <pthread.h>
+#include <iostream>
 #include "../Utils/api_gpio/pmap.h"
 #include "../Utils/api_gpio/pin.h"
 #include "../Utils/utils.h"
  
 using namespace std;
 
-#define PORTNUM 8000
+#define PORTNUM 4325
 #define PORT_LDR 4 //Light Dependent Resistor
 #define PORT_POT 1 //potentiometer
  
@@ -32,12 +33,12 @@ void socketHandler(int socketId) {
     //Enviar uma msg para o cliente que se conectou
     int bytesenviados;
     printf("Cliente vai enviar uma mensagem\n");
-    bytesenviados = send(socketId,&mensagem,sizeof(mensagem),0);
- 
+    bytesenviados = ::send(socketId,&mensagem,sizeof(mensagem),0);
     if (bytesenviados == -1) {
         printf("Falha ao executar send()");
         exit(EXIT_FAILURE);
     }
+    close(socketId);
 }
  
 void read_pot(){
@@ -79,6 +80,9 @@ int main(int argc, char *argv[])
     endereco.sin_family = AF_INET;
     endereco.sin_port = htons(PORTNUM);
     endereco.sin_addr.s_addr = inet_addr("127.0.0.1");
+    /*mensagem.bot = 1;
+    mensagem.pot = 2;
+    mensagem.luz = 3;*/
     /*
      * Criando o Socket
      *
@@ -86,13 +90,13 @@ int main(int argc, char *argv[])
      * PARAM2: SOCK_STREAM ou SOCK_DGRAM
      * PARAM3: protocolo (IP, UDP, TCP, etc). Valor 0 escolhe automaticamente
     */
-    socketId = socket(AF_INET, SOCK_STREAM, 0);
+    /*socketId = ::socket(AF_INET, SOCK_STREAM, 0);
  
     //Verificar erros
     if (socketId == -1) {
         printf("Falha ao executar socket()\n");
         exit(EXIT_FAILURE);
-    }
+    }*/
     std::thread pot(read_pot);
     std::thread botao(read_botao);
     std::thread luz(read_luz);
@@ -105,17 +109,29 @@ int main(int argc, char *argv[])
     pthread_setschedparam(pot.native_handle(), SCHED_RR, &param1);
     pthread_setschedparam(luz.native_handle(), SCHED_RR, &param2);
     pthread_setschedparam(botao.native_handle(), SCHED_RR, &param3);
-    if ( connect (socketId, (struct sockaddr *)&endereco, sizeof(struct sockaddr)) == -1 ) {
+    /*if ( ::connect (socketId, (struct sockaddr *)&endereco, sizeof(struct sockaddr)) == -1 ) {
         printf("Falha ao executar connect()\n");
         exit(EXIT_FAILURE);
-    }
+    }*/
     while(1) {
+        socketId = ::socket(AF_INET, SOCK_STREAM, 0);
+ 
+        //Verificar erros
+        if (socketId == -1) {
+            printf("Falha ao executar socket()\n");
+            exit(EXIT_FAILURE);
+        }
+        if ( ::connect (socketId, (struct sockaddr *)&endereco, sizeof(struct sockaddr)) == -1 ) {
+            printf("Falha ao executar connect()\n");
+            exit(EXIT_FAILURE);
+        }
         //Conectando o socket cliente ao socket servidor
         thread t(socketHandler,socketId);
         t.detach();
+        usleep(1500000);
     }
     running = false;
-    close(socketId);
+    
  
     return 0;
 }
