@@ -5,26 +5,72 @@
 #include <arpa/inet.h>  //inet_addr
 #include <sys/socket.h> //socket
 #include <unistd.h>     //close
+#include <thread>
+#include <pthread.h>
+#include "../Utils/api_gpio/pmap.h"
+#include "../Utils/api_gpio/pin.h"
+#include "../Utils/utils.h"
  
-#define MAXMSG 1024
-#define MAXNAME 100
-#define PORTNUM 4325
+using namespace std;
+
+#define PORTNUM 8000
+#define PORT_LDR 4 //Light Dependent Resistor
+#define PORT_POT 1 //potentiometer
  
 class Mensagem {
     public:
-        char msg[MAXMSG];
+        int pot, bot, luz;
         Mensagem();
 };
+
+Mensagem::Mensagem(){}
+
+Mensagem mensagem;
+bool running = true;
+
+void socketHandler(int socketId) {
+    //Enviar uma msg para o cliente que se conectou
+    int bytesenviados;
+    printf("Cliente vai enviar uma mensagem\n");
+    bytesenviados = send(socketId,&mensagem,sizeof(mensagem),0);
  
+    if (bytesenviados == -1) {
+        printf("Falha ao executar send()");
+        exit(EXIT_FAILURE);
+    }
+}
+ 
+void read_pot(){
+    while(running) {
+        mensagem.pot = readAnalog(PORT_POT);
+        std::this_thread::sleep_for( std::chrono::milliseconds(300) );
+    }
+
+}
+
+void read_botao(){
+    init();
+    Pin btn ("P9_27", Direction::IN, Value::LOW);
+    int btnValue;
+    while(running){
+        mensagem.bot = btn.getValue();
+        std::this_thread::sleep_for( std::chrono::milliseconds(300) );
+    }
+
+}
+
+void read_luz(){
+    while (running){
+        mensagem.luz = readAnalog(PORT_LDR);
+        std::this_thread::sleep_for( std::chrono::milliseconds(300) );
+    }
+
+}
  
 int main(int argc, char *argv[])
 {
     struct sockaddr_in endereco;
     int socketId;
- 
-    Mensagem mensagem;
-    strcpy(mensagem.msg,"Olá, tudo bem?");
-    int bytesenviados;
  
     /*
      * Configurações do endereço
@@ -32,8 +78,7 @@ int main(int argc, char *argv[])
     memset(&endereco, 0, sizeof(endereco));
     endereco.sin_family = AF_INET;
     endereco.sin_port = htons(PORTNUM);
-    endereco.sin_addr.s_addr = inet_addr("10.51.66.39");
- 
+    endereco.sin_addr.s_addr = inet_addr("127.0.0.1");
     /*
      * Criando o Socket
      *
@@ -44,31 +89,32 @@ int main(int argc, char *argv[])
     socketId = socket(AF_INET, SOCK_STREAM, 0);
  
     //Verificar erros
-    if (socketId == -1)
-    {
+    if (socketId == -1) {
         printf("Falha ao executar socket()\n");
         exit(EXIT_FAILURE);
     }
- 
-    //Conectando o socket cliente ao socket servidor
-    if ( connect (socketId, (struct sockaddr *)&endereco, sizeof(struct sockaddr)) == -1 )
-    {
+    std::thread pot(read_pot);
+    std::thread botao(read_botao);
+    std::thread luz(read_luz);
+    struct sched_param param1;
+    struct sched_param param2;
+    struct sched_param param3;
+    param1.sched_priority = sched_get_priority_max(SCHED_RR);
+    param3.sched_priority = sched_get_priority_min(SCHED_RR);
+    param2.sched_priority = sched_get_priority_max(SCHED_RR)/2;
+    pthread_setschedparam(pot.native_handle(), SCHED_RR, &param1);
+    pthread_setschedparam(luz.native_handle(), SCHED_RR, &param2);
+    pthread_setschedparam(botao.native_handle(), SCHED_RR, &param3);
+    if ( connect (socketId, (struct sockaddr *)&endereco, sizeof(struct sockaddr)) == -1 ) {
         printf("Falha ao executar connect()\n");
         exit(EXIT_FAILURE);
     }
-    printf ("Cliente conectado ao servidor\n");
- 
-    //Enviar uma msg para o cliente que se conectou
-    printf("Cliente vai enviar uma mensagem\n");
-    bytesenviados = send(socketId,&mensagem,sizeof(mensagem),0);
- 
-    if (bytesenviados == -1)
-    {
-        printf("Falha ao executar send()");
-        exit(EXIT_FAILURE);
+    while(1) {
+        //Conectando o socket cliente ao socket servidor
+        thread t(socketHandler,socketId);
+        t.detach();
     }
-    printf("Cliente enviou a seguinte msg (%d bytes) para o servidor: %s \n",bytesenviados,mensagem.msg);
- 
+    running = false;
     close(socketId);
  
     return 0;
