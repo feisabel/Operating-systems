@@ -1,11 +1,19 @@
 
 public class Ze {
-    boolean jump = false;
-    boolean arm = false;
-    boolean running = true;
-    int n = 20;
-    int m = 20;
-    int pot_atual = 2048;
+    protected boolean jump;
+    protected boolean arm;
+    protected boolean running;
+    protected int n, m, pot_atual;
+
+    public Ze (){
+        jump = false;
+        arm = false;
+        running = true;
+        n = 20;
+        m = 20;
+        pot_atual = 2048;
+
+    }
 
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
@@ -13,50 +21,28 @@ public class Ze {
     }
 
     void updateRun(int pot){
-        while (running){
-            if (pot > pot_atual + 10){
-                pot_atual = pot;
-                if (n > 0){
-                    n--; m++;
-                }
-            } else if (pot < pot_atual - 10){
-                pot_atual = pot;
-                if (m > 0){
-                    m--; n++;
-                }
+        if (pot > pot_atual + 10){
+            pot_atual = pot;
+            if (n > 0){
+                n--; m++;
             }
-            clearScreen();
-            draw();
-            //TODO: thread sleep
+        } else if (pot < pot_atual - 10){
+            pot_atual = pot;
+            if (m > 0){
+                m--; n++;
+            }
         }
     }
 
     void checkJump(int btn){
-        while(running){
-            if (btn == 1){
-                jump = true;
-                draw();
-                //TODO: sleep
-                jump = false;
-            }
-            clearScreen();
-            draw();
-            //TODO: SLEEP thread
+        if (btn == 1){
+            jump = (!jump) ? true : false;
         }
     }
 
     void checkArm(int ldr){
-        while (running){
-            if (ldr < 1000) {
-                arm = true;
-                clearScreen();
-                draw();
-                //sleep
-                arm = false;
-            }
-            clearScreen();
-            draw();
-            //TODO: thread sleep
+        if (ldr < 1000) {
+            arm = (!arm) ? true : false;
         }
     }
 
