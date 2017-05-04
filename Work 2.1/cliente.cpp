@@ -11,6 +11,7 @@
 #include "../Utils/api_gpio/pmap.h"
 #include "../Utils/api_gpio/pin.h"
 #include "../Utils/utils.h"
+#include <string>
  
 using namespace std;
 
@@ -27,13 +28,16 @@ class Mensagem {
 Mensagem::Mensagem(){}
 
 Mensagem mensagem;
+string msg;
+
 bool running = true;
 
 void socketHandler(int socketId) {
     //Enviar uma msg para o cliente que se conectou
     int bytesenviados;
+    msg = "" + to_string(mensagem.pot) + "," + to_string(mensagem.bot) + "," + to_string(mensagem.luz);
     printf("Cliente vai enviar uma mensagem\n");
-    bytesenviados = ::send(socketId,&mensagem,sizeof(mensagem),0);
+    bytesenviados = ::send(socketId,&msg,sizeof(msg),0);
     if (bytesenviados == -1) {
         printf("Falha ao executar send()");
         exit(EXIT_FAILURE);
