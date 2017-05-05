@@ -38,6 +38,8 @@ void socketHandler(int socketId) {
     //Enviar uma msg para o cliente que se conectou
     int bytesenviados;
     msg = "" + to_string(mensagem.pot) + "," + to_string(mensagem.bot) + "," + to_string(mensagem.luz);
+    if (mensagem.bot == 1)
+        mensagem.bot = 0;
     cout << "Cliente vai enviar uma mensagem : " <<  msg << endl;
     bytesenviados = ::send(socketId,msg.data(),msg.size()+1,0);
     if (bytesenviados == -1) {
@@ -85,24 +87,8 @@ int main(int argc, char *argv[])
     memset(&endereco, 0, sizeof(endereco));
     endereco.sin_family = AF_INET;
     endereco.sin_port = htons(PORTNUM);
-    endereco.sin_addr.s_addr = inet_addr("192.168.0.12");
-    /*mensagem.bot = 1;
-    mensagem.pot = 2;
-    mensagem.luz = 3;*/
-    /*
-     * Criando o Socket
-     *
-     * PARAM1: AF_INET ou AF_INET6 (IPV4 ou IPV6)
-     * PARAM2: SOCK_STREAM ou SOCK_DGRAM
-     * PARAM3: protocolo (IP, UDP, TCP, etc). Valor 0 escolhe automaticamente
-    */
-    /*socketId = ::socket(AF_INET, SOCK_STREAM, 0);
- 
-    //Verificar erros
-    if (socketId == -1) {
-        printf("Falha ao executar socket()\n");
-        exit(EXIT_FAILURE);
-    }*/
+    endereco.sin_addr.s_addr = inet_addr("192.168.0.175");
+    
     std::thread pot(read_pot);
     std::thread botao(read_botao);
     std::thread luz(read_luz);
@@ -115,10 +101,7 @@ int main(int argc, char *argv[])
     pthread_setschedparam(pot.native_handle(), SCHED_RR, &param1);
     pthread_setschedparam(luz.native_handle(), SCHED_RR, &param2);
     pthread_setschedparam(botao.native_handle(), SCHED_RR, &param3);
-    /*if ( ::connect (socketId, (struct sockaddr *)&endereco, sizeof(struct sockaddr)) == -1 ) {
-        printf("Falha ao executar connect()\n");
-        exit(EXIT_FAILURE);
-    }*/
+    
     while(1) {
         socketId = ::socket(AF_INET, SOCK_STREAM, 0);
  
@@ -134,7 +117,7 @@ int main(int argc, char *argv[])
         //Conectando o socket cliente ao socket servidor
         thread t(socketHandler,socketId);
         t.detach();
-        usleep(1500000);
+        usleep(17000);
     }
     running = false;
     
