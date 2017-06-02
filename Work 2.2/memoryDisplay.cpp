@@ -21,6 +21,10 @@ static string file_name = "infos.txt";
 map<long int, Process> processes;
 Sys systemInfo;
 
+bool compareByMemory(const Process &a, const Process &b) {
+	return a.mem < b.mem;
+}
+
 Process* build_tree(long tgid, Process * father) {
 	Process* tree = new Process();
   char path[40], line[100], *p;
@@ -164,17 +168,20 @@ void print() {
   Process* tree = build_tree(1, NULL); //atualiza os swap caso tenham
   DFS(tree);
 
-  //About values of swap:
-  //-1: não há esse pid na pasta proc. Pid obtido atraves do ps
-  //-2: A pasta /proc/ tem esse pid e nao há informacao do vmswap
-  
+	//Take all values
+	vector<Process> v;
+	for(map<long int,Process>::iterator it = processes.begin(); it != processes.end(); ++it) {
+  	v.push_back(it->second);
+	}
+	//Ordenate by memory
+	sort(v.begin(), v.end(), compareByMemory);
+
   //show info
   system("clear");
   cout << setw(7) << "PID"<< "   |"  << setw(20) << "NAME" << "   |"  << setw(7) << "%MEMORY" << "   |" << setw(20) << "MINOR PAGE FAULTS"<< "   |" << setw(20)<<"MAJOR PAGE FAULTS"<< "   |" << setw(7) <<"SWAP" << endl;
-  map<long int,Process>::iterator it = processes.begin();
-  for (it=processes.begin(); it!=processes.end(); ++it)
-    cout << setw(7) << it->first << "   |" << setw(20) << it->second.name << "   |" << setw(7) << it->second.mem << "   |" << setw(20) << it->second.min_flt << "   |" << setw(20) << it->second.maj_flt << "   |" << setw(7) << it->second.swap<<endl;
-
+  for (int it =0 ; it < v.size(); it++){
+    cout << setw(7) << v[it].pid << "   |" << setw(20) << v[it].name << "   |" << setw(7) << v[it].mem << "   |" << setw(20) << v[it].min_flt << "   |" << setw(20) << v[it].maj_flt << "   |" << setw(7) << v[it].swap<<endl;
+	}
   updateInfoSystem();
   cout << "\nVALORES DO SISTEMA:\n";
   cout << setw(25) << "meminfo" << setw(25) << "|" << endl;
@@ -200,7 +207,7 @@ void print() {
 }
 
 int main() {
-	
+
   for(int i = 0; i < 100; i++) {
     print();
     usleep(3000000);
