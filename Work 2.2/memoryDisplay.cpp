@@ -177,13 +177,13 @@ void print() {
 
   updateInfoSystem();
   cout << "\nVALORES DO SISTEMA:\n";
-  cout << setw(25) << "meminfo" << setw(25) << "|";
+  cout << setw(25) << "meminfo" << setw(25) << "|" << endl;
   //cout << setw(15) << "vmstat" << setw(15) << "|" << endl;
   //meminfo
   cout << setw(7) << "Cached" << setw(8) << "|";
   cout << setw(7) << "SwapCached" << "    |";
   cout << setw(5) << "SwapTotal" << setw(5) << "|";
-  cout << setw(5) << "SwapFree"<< setw(5) << "|";
+  cout << setw(5) << "SwapFree"<< setw(5) << "|" << endl;
   //vmstat
  /* cout << setw(5) << "Cache"<< setw(6) << "|";
   cout << setw(5) << "SwapIn"<< setw(5) << "|";
@@ -192,7 +192,7 @@ void print() {
   cout << setw(7) << systemInfo.cached << setw(8) << "|";
   cout << setw(7) << systemInfo.swapCached << setw(8) << "|";
   cout << setw(7) << systemInfo.swapTotal << setw(7) << "    |";
-  cout << setw(7) << systemInfo.swapFree << setw(6) << "|";
+  cout << setw(7) << systemInfo.swapFree << setw(6) << "|" << endl;
   //values vmstat
   /*cout << setw(5) << systemInfo.cache << setw(5) << "|";
   cout << setw(5) << systemInfo.swapIn << setw(6) << "|";
