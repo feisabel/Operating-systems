@@ -17,33 +17,8 @@
 
 using namespace std;
 static string file_name = "infos.txt";
-
-struct Sys{
-	int cached; //proc/meminfo in Kb
-	int swapCached; //proc/meminfo in kb
-	int swapTotal; //proc/meminfo in Kb
-	int swapFree; //proc/meminfo in Kb
-	int cache; //vmstat
-	int swapIn; //vmstat
-	int swapOut; //vmstat
-};
-
-struct Process {
-	string name;
-	long int pid;
-	long int ppid;
-	long int user_uid; //User that owns the process
-  string user_name;
-	float mem;
-	int min_flt;
-	int maj_flt;
-	string swap;
-	vector<Process*> children;
-};
-
 map<long int, Process> processes;
 Sys systemInfo;
-
 
 Process* build_tree(long tgid, Process * father) {
 	Process* tree = new Process();
@@ -53,8 +28,6 @@ Process* build_tree(long tgid, Process * father) {
   snprintf(path, 40, "/proc/%ld/status", tgid);
 
   statusf = fopen(path, "r");
-  //printf("Open file do PID: %li\n", tgid);
-
   if(!statusf){
     //fprintf(stderr, "Problem trying to open\n");
   }
@@ -78,7 +51,6 @@ Process* build_tree(long tgid, Process * father) {
 				if(strncmp(line, "VmSwap:", 7) == 0){
           tree->swap =  string(line).substr(8, strlen(line)-1);
         }
-        //break;
     }
    // cout << "Add process: " << tgid << "(" << tree->name << ")" << "\nPPid: " << tree->ppid << "\nUid: " << tree->user_uid << "(" << tree->user_name << ")\n\n\n";
     fclose(statusf);
@@ -103,20 +75,14 @@ Process* build_tree(long tgid, Process * father) {
 * @param file: name of the file
 */
 void getPs(){
-	int p, mif, maf;
- 	float m;
-	string s = run(stc("ps -eo pid,pmem,min_flt,maj_flt --no-header > infos.txt"));
+	string output = run(stc("ps -eo pid,pmem,min_flt,maj_flt --no-header > infos.txt"));
 	ifstream myfile (file_name);
 	if (myfile.is_open()) {
-		while ( getline (myfile,s) ) {
-			stringstream ss(s);
-  		ss >> p >> m >> mif >> maf;
+		while ( getline (myfile, output) ) {
 			Process aux;
-			aux.pid = p;
-			aux.mem = m;
-			aux.min_flt = mif;
-			aux.maj_flt = maf;
-			processes[p] = aux;
+			stringstream ss(output);
+  		ss >> aux.pid >> aux.mem >> aux.min_flt  >> aux.maj_flt;
+			processes[aux.pid] = aux;
     }
    	myfile.close();
 	}
@@ -130,7 +96,8 @@ void DFS(Process* u) {
 	processes[u->pid].swap = u->swap;
   for(int i = 0; i < u->children.size(); i++) {
     Process* v = u->children[i];
-			DFS(v);
+		processes[u->pid].children.push_back(v);
+		DFS(v);
   }
 }
 
@@ -138,48 +105,46 @@ void updateInfoSystem(){
 	int aux;
 	string s = run(stc("vmstat > infos.txt"));
 	ifstream myfile (file_name);
-		if (myfile.is_open()) {
-			getline (myfile,s); //header
-			getline (myfile,s); //header
-			getline (myfile,s); //values
-			stringstream ss(s);
-			ss >> aux; //r
-			ss >> aux; //b
-			ss >> aux; //swpd
-			ss >> aux; //free
-			ss >> aux; //buff
-			ss >> systemInfo.cache; //cache
-			ss >> systemInfo.swapIn; //si
-			ss >> systemInfo.swapOut; //so
-			myfile.close();
+	if (myfile.is_open()) {
+		getline (myfile,s); //header
+		getline (myfile,s); //header
+		getline (myfile,s); //values
+		stringstream ss(s);
+		ss >> aux; //r
+		ss >> aux; //b
+		ss >> aux; //swpd
+		ss >> aux; //free
+		ss >> aux; //buff
+		ss >> systemInfo.cache; //cache
+		ss >> systemInfo.swapIn; //si
+		ss >> systemInfo.swapOut; //so
+		myfile.close();
+	}
+	char path[40], line[100], *p;
+	snprintf(path, 40, "/proc/meminfo");
+	FILE* statusf = fopen(path, "r");;
+	if(!statusf){
+	    fprintf(stderr, "Problem trying to check /proc/meminfo\n");
+	}
+	else{
+		while(fgets(line, 100, statusf)) {
+			if(strncmp(line, "Cached:", 7) == 0){
+				systemInfo.cached = stoi(string(line).substr(8, strlen(line)));
+			}
+			if(strncmp(line, "SwapCached:", 11) == 0){
+				systemInfo.swapCached = stoi(string(line).substr(12, strlen(line)));
+			}
+			if(strncmp(line, "SwapTotal:", 10) == 0){
+				systemInfo.swapTotal = stoi(string(line).substr(11, strlen(line)));
+			}
+			if(strncmp(line, "SwapFree:", 9) == 0){
+				systemInfo.swapFree = stoi(string(line).substr(10, strlen(line)));
+			}
 		}
-		char path[40], line[100], *p;
-	  snprintf(path, 40, "/proc/meminfo");
-		FILE* statusf = fopen(path, "r");;
-	  if(!statusf){
-	    //fprintf(stderr, "Problem trying to open\n");
-	  }
-	  else{
-	    while(fgets(line, 100, statusf)) {
-	        if(strncmp(line, "Cached:", 7) == 0){
-	          systemInfo.cached = stoi(string(line).substr(8, strlen(line)));
-	        }
-					if(strncmp(line, "SwapCached:", 11) == 0){
-					 systemInfo.swapCached = stoi(string(line).substr(12, strlen(line)));
-				 }
-				 if(strncmp(line, "SwapTotal:", 10) == 0){
-					systemInfo.swapTotal = stoi(string(line).substr(11, strlen(line)));
-				}
-				if(strncmp(line, "SwapFree:", 9) == 0){
-				 systemInfo.swapFree = stoi(string(line).substr(10, strlen(line)));
-			 }
-	    }
-		}
+	}
 }
 
 int main() {
-  int p, mif, maf;
-  float m;
 	getPs();
 	Process* tree = build_tree(1, NULL);
 	DFS(tree);
