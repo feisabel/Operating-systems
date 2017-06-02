@@ -18,6 +18,16 @@
 using namespace std;
 static string file_name = "infos.txt";
 
+struct Sys{
+	int cached; //proc/meminfo in Kb
+	int swapCached; //proc/meminfo in kb
+	int swapTotal; //proc/meminfo in Kb
+	int swapFree; //proc/meminfo in Kb
+	int cache; //vmstat
+	int swapIn; //vmstat
+	int swapOut; //vmstat
+};
+
 struct Process {
 	string name;
 	long int pid;
@@ -32,6 +42,8 @@ struct Process {
 };
 
 map<long int, Process> processes;
+Sys systemInfo;
+
 
 Process* build_tree(long tgid, Process * father) {
 	Process* tree = new Process();
@@ -122,8 +134,8 @@ void DFS(Process* u) {
   }
 }
 
-void printInfoSystem(){
-	int dummy, cache, swapi, swapo;
+void updateInfoSystem(){
+	int aux;
 	string s = run(stc("vmstat > infos.txt"));
 	ifstream myfile (file_name);
 		if (myfile.is_open()) {
@@ -131,19 +143,38 @@ void printInfoSystem(){
 			getline (myfile,s); //header
 			getline (myfile,s); //values
 			stringstream ss(s);
-			ss >> dummy; //r
-			ss >> dummy; //b
-			ss >> dummy; //swpd
-			ss >> dummy; //free
-			ss >> dummy; //buff
-			ss >> cache; //cache
-			ss >> swapi; //si
-			ss >> swapo; //so
+			ss >> aux; //r
+			ss >> aux; //b
+			ss >> aux; //swpd
+			ss >> aux; //free
+			ss >> aux; //buff
+			ss >> systemInfo.cache; //cache
+			ss >> systemInfo.swapIn; //si
+			ss >> systemInfo.swapOut; //so
 			myfile.close();
 		}
-		cout << "Total cache: " << cache << endl;
-  	cout << "Total Swap-in: " << swapi << endl;
-  	cout << "Total Swap-out: " << swapo << endl << endl;
+		char path[40], line[100], *p;
+	  snprintf(path, 40, "/proc/meminfo");
+		FILE* statusf = fopen(path, "r");;
+	  if(!statusf){
+	    //fprintf(stderr, "Problem trying to open\n");
+	  }
+	  else{
+	    while(fgets(line, 100, statusf)) {
+	        if(strncmp(line, "Cached:", 7) == 0){
+	          systemInfo.cached = stoi(string(line).substr(8, strlen(line)));
+	        }
+					if(strncmp(line, "SwapCached:", 11) == 0){
+					 systemInfo.swapCached = stoi(string(line).substr(12, strlen(line)));
+				 }
+				 if(strncmp(line, "SwapTotal:", 10) == 0){
+					systemInfo.swapTotal = stoi(string(line).substr(11, strlen(line)));
+				}
+				if(strncmp(line, "SwapFree:", 9) == 0){
+				 systemInfo.swapFree = stoi(string(line).substr(10, strlen(line)));
+			 }
+	    }
+		}
 }
 
 int main() {
@@ -156,6 +187,6 @@ int main() {
 	map<long int,Process>::iterator it = processes.begin();
 	for (it=processes.begin(); it!=processes.end(); ++it)
 		cout << setw(7) << it->first << "           " << setw(7) << it->second.mem << "            " << setw(7) << it->second.min_flt << "            " << setw(7) << it->second.maj_flt << "            " << setw(7) << it->second.swap <<endl;
-  printInfoSystem();
+		updateInfoSystem();
 	return 0;
 }
