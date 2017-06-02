@@ -64,7 +64,7 @@ Process* build_tree(long tgid, Process * father) {
           tree->name =  string(line).substr(6, strlen(line));
         }
 				if(strncmp(line, "VmSwap:", 7) == 0){
-          tree->swap =  string(line).substr(8, strlen(line));
+          tree->swap =  string(line).substr(8, strlen(line)-1);
         }
         //break;
     }
@@ -126,7 +126,6 @@ void printInfoSystem(){
 	int dummy, cache, swapi, swapo;
 	string s = run(stc("vmstat > infos.txt"));
 	ifstream myfile (file_name);
-	myfile.open(file_name, ifstream::in);
 		if (myfile.is_open()) {
 			getline (myfile,s); //header
 			getline (myfile,s); //header
@@ -143,8 +142,8 @@ void printInfoSystem(){
 			myfile.close();
 		}
 		cout << "Total cache: " << cache << endl;
-  	cout << "Swap-in: " << swapi << endl;
-  	cout << "Swap-out: " << swapo << endl << endl;
+  	cout << "Total Swap-in: " << swapi << endl;
+  	cout << "Total Swap-out: " << swapo << endl << endl;
 }
 
 int main() {
@@ -152,11 +151,11 @@ int main() {
   float m;
 	getPs();
 	Process* tree = build_tree(1, NULL);
-	//DFS(tree);
+	DFS(tree);
 	cout << "   PID              %MEMORY       MINOR PAGE FAULTS      MAJOR PAGE FAULTS      SWAP" << endl;
 	map<long int,Process>::iterator it = processes.begin();
 	for (it=processes.begin(); it!=processes.end(); ++it)
 		cout << setw(7) << it->first << "           " << setw(7) << it->second.mem << "            " << setw(7) << it->second.min_flt << "            " << setw(7) << it->second.maj_flt << "            " << setw(7) << it->second.swap <<endl;
-
+  printInfoSystem();
 	return 0;
 }

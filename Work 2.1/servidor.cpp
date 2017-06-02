@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
     endereco.sin_family = AF_INET;
     endereco.sin_port = htons(PORTNUM);
     //endereco.sin_addr.s_addr = INADDR_ANY;
-    endereco.sin_addr.s_addr = inet_addr("127.0.0.1");
+    endereco.sin_addr.s_addr = inet_addr("192.168.0.12");
  
     /*
      * Criando o Socket

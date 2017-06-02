@@ -43,7 +43,7 @@ public class Server extends Thread {
                 System.err.println("Erro lendo mensagem: " + iOException.toString());
             }
 
-            System.out.println("Conexao encerrada pelo cliente");
+            //System.out.println("Conexao encerrada pelo cliente");
             input.close();
             conexao.close();
         } catch (Exception e) {
