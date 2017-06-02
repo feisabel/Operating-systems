@@ -7,6 +7,7 @@
 #include <ulimit.h>
 #include <signal.h>
 #include <errno.h>
+#include <algorithm>
 #include <sstream>
 #include <string>
 #include <fstream>
@@ -162,6 +163,7 @@ void updateInfoSystem(){
 }
 
 void print() {
+  processes.clear();
   // get pid,pmem,min_flt,maj_flt by ps
   getPs();
   //get ppid, uid, name, vmswap by /proc/status
@@ -190,7 +192,8 @@ void print() {
   cout << setw(7) << "Cached" << setw(8) << "|";
   cout << setw(7) << "SwapCached" << "    |";
   cout << setw(5) << "SwapTotal" << setw(5) << "|";
-  cout << setw(5) << "SwapFree"<< setw(5) << "|" << endl;
+  cout << setw(5) << "SwapFree"<< setw(5) << "|";
+  cout << setw(5) << "SwapUsed"<< setw(5) << "|" << endl;
   //vmstat
  /* cout << setw(5) << "Cache"<< setw(6) << "|";
   cout << setw(5) << "SwapIn"<< setw(5) << "|";
@@ -199,7 +202,9 @@ void print() {
   cout << setw(7) << systemInfo.cached << setw(8) << "|";
   cout << setw(7) << systemInfo.swapCached << setw(8) << "|";
   cout << setw(7) << systemInfo.swapTotal << setw(7) << "    |";
-  cout << setw(7) << systemInfo.swapFree << setw(6) << "|" << endl;
+  cout << setw(7) << systemInfo.swapFree << setw(6) << "|";
+  cout << setw(7) << systemInfo.swapTotal - systemInfo.swapFree << setw(6) << "|" << endl;
+
   //values vmstat
   /*cout << setw(5) << systemInfo.cache << setw(5) << "|";
   cout << setw(5) << systemInfo.swapIn << setw(6) << "|";
