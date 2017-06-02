@@ -178,7 +178,7 @@ void print() {
   updateInfoSystem();
   cout << "\nVALORES DO SISTEMA:\n";
   cout << setw(25) << "meminfo" << setw(25) << "|";
-  cout << setw(15) << "vmstat" << setw(15) << "|" << endl;
+  //cout << setw(15) << "vmstat" << setw(15) << "|" << endl;
   //meminfo
   cout << setw(7) << "Cached" << setw(8) << "|";
   cout << setw(7) << "SwapCached" << "    |";
