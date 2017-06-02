@@ -28,7 +28,7 @@ struct Process {
 	float mem;
 	int min_flt;
 	int maj_flt;
-	std::string swap;
+	int swap;
 	std::vector<Process*> children;
 };
 

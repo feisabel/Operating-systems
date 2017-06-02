@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <cstdio>
+#include <stdio.h> //strlen
 #include <stdexcept>
 #include <iostream>
 #include <cstdlib>
@@ -33,6 +34,7 @@ Process* build_tree(long tgid, Process * father) {
   }
   else{
     tree->pid = tgid;
+		//tree->swap = -1;// initialize to check after; TODO: check if -1 is impossible
     while(fgets(line, 100, statusf)) {
         if(strncmp(line, "PPid:", 5) == 0){
           tree->ppid = atoi(line + 5);
@@ -47,9 +49,14 @@ Process* build_tree(long tgid, Process * father) {
         }
         if(strncmp(line, "Name:", 5) == 0){
           tree->name =  string(line).substr(6, strlen(line));
+					//clean of "\n":
+					int len = tree->name.size();
+					if(len> 0 && tree->name[len-1] == '\n')
+						tree->name[--len] = '\0';
         }
 				if(strncmp(line, "VmSwap:", 7) == 0){
-          tree->swap =  string(line).substr(8, strlen(line)-1);
+//					cout << "tem para pid "<< tree->pid << endl;
+          tree->swap =  stoi(string(line).substr(8, strlen(line)));
         }
     }
    // cout << "Add process: " << tgid << "(" << tree->name << ")" << "\nPPid: " << tree->ppid << "\nUid: " << tree->user_uid << "(" << tree->user_name << ")\n\n\n";
@@ -83,6 +90,8 @@ void getPs(){
 			stringstream ss(output);
   		ss >> aux.pid >> aux.mem >> aux.min_flt  >> aux.maj_flt;
 			processes[aux.pid] = aux;
+			//initialize in case the is no swap:
+			processes[aux.pid].swap = -1;
     }
    	myfile.close();
 	}
@@ -93,7 +102,11 @@ void DFS(Process* u) {
 	processes[u->pid].ppid = u->ppid;
 	processes[u->pid].user_uid = u->user_uid;
 	processes[u->pid].user_name = u->user_name;
-	processes[u->pid].swap = u->swap;
+	if(u->swap > 0 && u->swap == 0){
+		processes[u->pid].swap = u->swap;
+	} else{
+		processes[u->pid].swap = -2;
+	}
   for(int i = 0; i < u->children.size(); i++) {
     Process* v = u->children[i];
 		processes[u->pid].children.push_back(v);
@@ -145,13 +158,43 @@ void updateInfoSystem(){
 }
 
 int main() {
+	// get pid,pmem,min_flt,maj_flt by ps
 	getPs();
-	Process* tree = build_tree(1, NULL);
+	//get ppid, uid, name, vmswap by /proc/status
+	Process* tree = build_tree(1, NULL); //atualiza os swap caso tenham
 	DFS(tree);
-	cout << "   PID              %MEMORY       MINOR PAGE FAULTS      MAJOR PAGE FAULTS      SWAP" << endl;
+
+	//About values of swap:
+	//-1: não há esse pid na pasta proc. Pid obtido atraves do ps
+	//-2: A pasta /proc/ tem esse pid e nao há informacao do vmswap
+	
+	//show info
+	cout << setw(7) << "PID"<< "|"  << setw(20) << "NAME" << "|"  << setw(7) << "%MEMORY" << "|" << setw(20) << "MINOR PAGE FAULTS"<< "|" << setw(20)<<"MAJOR PAGE FAULTS"<< "|" << setw(7) <<"SWAP" << "|" << endl;
 	map<long int,Process>::iterator it = processes.begin();
 	for (it=processes.begin(); it!=processes.end(); ++it)
-		cout << setw(7) << it->first << "           " << setw(7) << it->second.mem << "            " << setw(7) << it->second.min_flt << "            " << setw(7) << it->second.maj_flt << "            " << setw(7) << it->second.swap <<endl;
-		updateInfoSystem();
+		cout << setw(7) << it->first << "|" << setw(20) << it->second.name << "|" << setw(7) << it->second.mem << "|" << setw(20) << it->second.min_flt << "|" << setw(20) << it->second.maj_flt << "|" << setw(7) << it->second.swap<<endl;
+
+	updateInfoSystem();
+	cout << "VALORES DO SISTEMA:\n";
+	cout << setw(25) << "meminfo" << setw(25) << "|";
+	cout << setw(15) << "vmstat" << setw(15) << "|" << endl;
+	//meminfo
+	cout << setw(7) << "Cached" << setw(8) << "|";
+	cout << setw(7) << "SwapCached" << setw(8) << "|";
+	cout << setw(5) << "SwapTotal" << setw(5) << "|";
+	cout << setw(5) << "SwapFree"<< setw(5) << "|";
+	//vmstat
+	cout << setw(5) << "Cache"<< setw(5) << "|";
+	cout << setw(5) << "SwapIn"<< setw(5) << "|";
+	cout << setw(5) << "SwapOut"<< setw(5) << "|"<< endl;
+	//values meminfo
+	cout << setw(7) << systemInfo.cached << setw(8) << "|";
+	cout << setw(7) << systemInfo.swapCached << setw(8) << "|";
+	cout << setw(5) << systemInfo.swapTotal << setw(5) << "|";
+	cout << setw(5) << systemInfo.swapFree << setw(5) << "|";
+	//values vmstat
+	cout << setw(5) << systemInfo.cache << setw(5) << "|";
+	cout << setw(5) << systemInfo.swapIn << setw(5) << "|";
+	cout << setw(5) << systemInfo.swapOut << setw(5) << "|"<< endl;
 	return 0;
 }
