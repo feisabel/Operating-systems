@@ -28,7 +28,6 @@ The user can click a panic button to kill the process using most CPU.
 To check it out:
 
 Run `cd Work\ 1.2/`
-s
 
 ## Work 1.3 ( Threads and GPIO )
 ---
@@ -38,6 +37,14 @@ This project runs a game to be played with the BeagleBone Black as a joystick. W
 To check it out:
 
 Run `cd Work\ 1.3/`
+
+## Work 2.2 ( Memory management )
+---
+This project consists of a visualization and monitoring system for processes' memory. It shows RAM, swapping and page faults for every process in execution and cache for the whole system every three seconds. 
+
+To check it out:
+
+Run `cd Work\ 2.2/`
  
 ## Contributors ##
 ---
