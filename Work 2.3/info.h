@@ -12,6 +12,7 @@
 #define TURN_OFF_TRAIN 5
 #define CHANGE_SPEED 6
 #define QUIT 7
+#define IP "192.168.7.1"
 
 class Mensagem {
     public:
