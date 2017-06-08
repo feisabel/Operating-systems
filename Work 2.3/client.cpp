@@ -12,30 +12,12 @@
 #include "../Utils/api_gpio/pmap.h"
 #include "../Utils/api_gpio/pin.h"
 #include "../Utils/utils.h"
+#include "info.h"
 #include <string>
 
 using namespace std;
 
-#define PORTNUM 4325
 #define PORT_POT 1 //potentiometer
-#define DISCONNECT 1
-#define CONNECT 1
-#define TURN_ON_TRAINS 2
-#define TURN_OFF_TRAINS 3
-#define TURN_ON_TRAIN 4
-#define TURN_OFF_TRAIN 5
-#define CHANGE_SPEED 6
-#define QUIT 7
-#define NB_TRAINS 7
-
-class Mensagem {
-    public:
-        int command;
-        int train;
-        int speed;
-        Mensagem() {};
-        Mensagem (int c, int t, int s) : command{c}, train{t}, speed{s} {}
-};
 
 void mainMenu(int selected, bool connected) {
     system("clear");

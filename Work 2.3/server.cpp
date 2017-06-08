@@ -8,19 +8,9 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include "info.h"
 
 using namespace std;
-
-#define PORTNUM 4325
-
-class Mensagem {
-    public:
-        int command;
-        int train;
-        int speed;
-        Mensagem() {}
-        Mensagem (int c, int t, int s) : command{c}, train{t}, speed{s} {}
-};
 
 void socketHandler(int socketDescriptor,Mensagem mensagem) {
     int byteslidos = 1;
