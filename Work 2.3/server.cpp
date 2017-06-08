@@ -31,7 +31,8 @@ void socketHandler(int socketDescriptor,Mensagem mensagem) {
         }
         else if(byteslidos == 0)
             break;
-        cout << "Servidor recebeu a seguinte msg do cliente: " << mensagem.command << endl;
+
+
 
     }
     close(socketDescriptor);
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
     memset(&endereco, 0, sizeof(endereco));
     endereco.sin_family = AF_INET;
     endereco.sin_port = htons(PORTNUM);
-    endereco.sin_addr.s_addr = inet_addr("127.0.0.1");
+    endereco.sin_addr.s_addr = inet_addr(IP);
 
     /*
      * Criando o Socket
