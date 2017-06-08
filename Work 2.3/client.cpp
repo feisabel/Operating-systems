@@ -40,16 +40,16 @@ class Mensagem {
 void mainMenu(int selected, bool connected) {
     system("clear");
     if(connected) {
-      cout << (selected== DISCONNECT ? "> Desconectar do servidor\n" : "Desconectar do servidor\n");
-      cout << (selected== TURN_ON_TRAINS ? "> Ligar todos os trens\n" : "Ligar todos os trens\n");
-      cout << (selected== TURN_OFF_TRAINS ? "> Desligar todos os trens\n" : "Desligar todos os trens\n");
-      cout << (selected== TURN_ON_TRAIN ? "> Ligar um trem específico\n" : "Ligar um trem específico\n");
-      cout << (selected== TURN_OFF_TRAIN ? "> Desligar um trem específico\n" : "Desligar um trem específico\n");
-      cout << (selected== CHANGE_SPEED ? "> Alterar a velocidade de um trem específico\n" : "Alterar a velocidade de um trem específico\n");
+      cout << (selected== DISCONNECT ? "> Desconectar do servidor\n" : "  Desconectar do servidor\n");
+      cout << (selected== TURN_ON_TRAINS ? "> Ligar todos os trens\n" : "  Ligar todos os trens\n");
+      cout << (selected== TURN_OFF_TRAINS ? "> Desligar todos os trens\n" : "  Desligar todos os trens\n");
+      cout << (selected== TURN_ON_TRAIN ? "> Ligar um trem específico\n" : "  Ligar um trem específico\n");
+      cout << (selected== TURN_OFF_TRAIN ? "> Desligar um trem específico\n" : "  Desligar um trem específico\n");
+      cout << (selected== CHANGE_SPEED ? "> Alterar a velocidade de um trem específico\n" : "  Alterar a velocidade de um trem específico\n");
     } else {
-      cout << (selected== CONNECT ? "> Conectar ao servidor\n" : "Conectar ao servidor\n");
+      cout << (selected== CONNECT ? "> Conectar ao servidor\n" : "  Conectar ao servidor\n");
     }
-    cout << (selected== QUIT ? "> Quit\n" : "Quit\n");
+    cout << (selected== QUIT ? "> Quit\n" : "  Quit\n");
 }
 
 int chooseSpeed(Pin play) {
@@ -65,7 +65,7 @@ int chooseSpeed(Pin play) {
             pot = readAnalog(PORT_POT);
             v = (pot / 4096.0 * 290) + 10;
             system("clear");
-            cout << v << endl;
+            cout << (int)v << endl;
         }
     }
 }
@@ -75,6 +75,9 @@ void trainMenu(int selected) {
     for(int i = 1; i <= NB_TRAINS; i++){
       if(selected == i){
         cout << "> ";
+      }
+      else {
+        cout << "  ";
       }
       cout << i << endl;
     }
