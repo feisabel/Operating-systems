@@ -124,19 +124,11 @@ int main(int argc, char *argv[]) {
     endereco.sin_port = htons(PORTNUM);
     endereco.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-    socketId = ::socket(AF_INET, SOCK_STREAM, 0);
-
     Mensagem msg;
     msg.train = 0;
     msg.speed = 100;
 
     int bytesenviados;
-
-    //Verificar erros
-    if (socketId == -1) {
-        printf("Falha ao executar socket()\n");
-        exit(EXIT_FAILURE);
-    }
 
     int selected = 1;
     bool connected = false;
@@ -177,38 +169,46 @@ int main(int argc, char *argv[]) {
             usleep(200000);
             if(selected == 1) {
                 if(connected) {
-                    connected = false;
                     close(socketId);
+                    connected = false;
                 }
                 else {
-                    connected = true;
+                    socketId = ::socket(AF_INET, SOCK_STREAM, 0);
+                    //Verificar erros
+                    if (socketId == -1) {
+                        printf("Falha ao executar socket()\n");
+                        exit(EXIT_FAILURE);
+                    }
                     if ( ::connect (socketId, (struct sockaddr *)&endereco, sizeof(struct sockaddr)) == -1 ) {
                         printf("Falha ao executar connect()\n");
                         exit(EXIT_FAILURE);
                     }
+                    connected = true;
                 }
                 mainMenu(selected, connected);
             }
             else {
-              msg.command = selected;
-              if(selected == TURN_ON_TRAIN || selected == TURN_OFF_TRAIN) {
-                  msg.train = chooseTrain(up, down, play);
-                  mainMenu(selected, connected);
-              } else if (selected == CHANGE_SPEED){
-                msg.train = chooseTrain(up, down, play);
-                msg.speed = chooseSpeed(play);
-                mainMenu(selected, connected);
-              } else if (selected == QUIT){
-                quit = true;
-              }
+                msg.command = selected;
+                if(selected == TURN_ON_TRAIN || selected == TURN_OFF_TRAIN) {
+                    msg.train = chooseTrain(up, down, play);
+                    mainMenu(selected, connected);
+                } else if (selected == CHANGE_SPEED) {
+                    msg.train = chooseTrain(up, down, play);
+                    msg.speed = chooseSpeed(play);
+                    mainMenu(selected, connected);
+                } else if (selected == QUIT) {
+                    if(connected)
+                        close(socketId);
+                    quit = true;
+                }
 
-              if(connected && selected > 1 && selected < 7) {
-                  bytesenviados = ::send(socketId,&msg,sizeof(msg),0);
-                  if (bytesenviados == -1) {
-                      printf("Falha ao executar send()");
-                      exit(EXIT_FAILURE);
-                  }
-              }
+                if(connected && selected > 1 && selected < 7) {
+                bytesenviados = ::send(socketId,&msg,sizeof(msg),0);
+                    if (bytesenviados == -1) {
+                        printf("Falha ao executar send()");
+                        exit(EXIT_FAILURE);
+                    }
+                }
             }
         }
     }
