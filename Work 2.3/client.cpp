@@ -85,7 +85,7 @@ int chooseTrain(Pin up, Pin down, Pin play) {
         }
         else if(play.getValue()) {
             usleep(200000);
-            return selected - 1;
+            return selected;
         }
 
     }
