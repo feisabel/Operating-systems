@@ -1,4 +1,4 @@
-# Work 2.3 [More Info](./Documents/Lab_Trabalho_2.3.pdf)
+# Work 2.3
 <!--https://github.com/raquel-oliveira/operational-systems/files/1066093/Lab_Trabalho_2.3.pdf-->
 
 This project consists of an urban train synchronization program. The train system has seven train, each going in the rightwards direction
@@ -37,7 +37,7 @@ Your Photoboard should be something like this:
 ![alt tag](Documents/Client_bb.png?raw=true "Configuration")
 <!-- ![Protoboard] (https://user-images.githubusercontent.com/6775247/27006026-0ec42d36-4e01-11e7-8485-f85b6d473d5c.png)-->
 
-![Set up](https://user-images.githubusercontent.com/6775247/27005806-bd257e70-4dfc-11e7-83d7-c8f8ee261466.gif)
+![Set up](https://user-images.githubusercontent.com/6775247/27006613-c24713f2-4e0e-11e7-9772-98333537258b.gif)
 
 ### Server:
 
@@ -63,8 +63,8 @@ Run `make`
 
 Run `./client`
 
-![Build](https://user-images.githubusercontent.com/6775247/27005809-c249d77a-4dfc-11e7-862e-c2b325c014d9.gif)
+![Build](https://user-images.githubusercontent.com/6775247/27006615-caad989a-4e0e-11e7-94cf-cc90df36eb48.gif)
 
 ## Demo
 ---
-![Demo](https://user-images.githubusercontent.com/6775247/27005773-dc329fc4-4dfb-11e7-906d-6ced92713bd8.gif)
+![Demo](https://user-images.githubusercontent.com/6775247/27006617-ceaea24a-4e0e-11e7-8903-050e2a6a4586.gif)

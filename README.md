@@ -4,13 +4,13 @@
 ## Work 1.1 ( Prevent Fork Bomb )
 ---
 
-This project was devided in two parts. 
+This project was divided in two parts.
 
 Part 1 prevents a fork bomb, by setting a limit for the number of processes of a user and then running a fork bomb.
 
 Part 2 creates a JSON file, "1.1_2.json", that works as the pstree for a given process. Also, it keeps showing the number of processes in the operating system and the number of processes by user every 10 seconds.
 
-To check it out : 
+To check it out :
 
 Run `cd Work\ 1.1/`
 
@@ -32,7 +32,7 @@ Run `cd Work\ 1.2/`
 ## Work 1.3 ( Threads and GPIO )
 ---
 
-This project runs a game to be played with the BeagleBone Black as a joystick. We use the potenciometer for horizonal movements, the LDR for jumping and the button for a special feature. Reading of the control information is done by threads (one for each).
+This project runs a game to be played with the BeagleBone Black as a joystick. We use the potentiometer for horizontal movements, the LDR for jumping and the button for a special feature. Reading of the control information is done by threads (one for each).
 
 To check it out:
 
@@ -40,12 +40,21 @@ Run `cd Work\ 1.3/`
 
 ## Work 2.2 ( Memory management )
 ---
-This project consists of a visualization and monitoring system for processes' memory. It shows RAM, swapping and page faults for every process in execution and cache for the whole system every three seconds. 
+This project consists of a visualization and monitoring system for processes' memory. It shows RAM, swapping and page faults for every process in execution and cache for the whole system every three seconds.
 
 To check it out:
 
 Run `cd Work\ 2.2/`
- 
+
+## Work 2.3 ( Train System )
+---
+This project consists of an urban train synchronization program. [More Info](./Documents/Lab_Trabalho_2.3.pdf) .
+Our program makes sure no trains hit each other and no deadlocks occur, by synchronizing them using binary semaphores.
+
+To check it out:
+
+Run `cd Work\ 2.3/`
+
 ## Contributors ##
 ---
 
